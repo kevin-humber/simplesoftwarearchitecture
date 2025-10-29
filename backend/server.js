@@ -14,15 +14,27 @@ const db = mysql.createConnection({
   password: 'password',
   database: 'petsdb'
 });
+// Retry database connection until MySQL is ready
+function connectWithRetry() {
+  db.connect((err) => {
+    if (err) {
+      console.error('❌ Database connection failed, retrying in 5 seconds...', err.code);
+      setTimeout(connectWithRetry, 5000);
+    } else {
+      console.log('✅ Connected to MySQL database');
+    }
+  });
+}
+connectWithRetry();
 
 // Connect to the database
-db.connect((err) => {
-  if (err) {
-    console.error('❌ Database connection failed:', err);
-    process.exit(1);
-  }
-  console.log('✅ Connected to MySQL database');
-});
+//db.connect((err) => {
+//  if (err) {
+//    console.error('❌ Database connection failed:', err);
+//    process.exit(1);
+//  }
+//  console.log('✅ Connected to MySQL database');
+//});
 
 // Simple route
 app.get('/', (req, res) => {
